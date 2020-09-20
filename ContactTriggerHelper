@@ -1,0 +1,12 @@
+public class ContactTriggerHelper {
+    public static void checkNoofContact(Set<String> accountIDSet){
+        Integer noOfContacts=0;
+        List<Account>accountcontactList=[SELECT id,No_Of_Contacts__c, (SELECT id FROM Contacts) FROM Account WHERE ID IN:accountIDSet];
+        for(Account accObj:accountcontactList){
+            noOfContacts=accObj.Contacts.size();
+            System.debug('noOfContacts-->'+noOfContacts);
+            accObj.No_Of_Contacts__c=noOfContacts;
+        }
+        update accountcontactList;
+    }
+}

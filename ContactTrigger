@@ -1,0 +1,36 @@
+trigger ContactTrigger on Contact (after insert,after update,after delete) {
+    Set<String> accountIDSet=new Set<String>();
+    if(Trigger.isInsert && Trigger.isafter){
+        for(Contact conObj:Trigger.new){
+            if(String.isNotBlank(conObj.AccountID)){
+                if(!accountIDSet.contains(conObj.AccountID)){
+                    accountIDSet.add(conObj.AccountID);
+                }
+            }
+        }
+    }
+    if(Trigger.isupdate && Trigger.isafter){
+        for(Contact con:Trigger.new){
+            if(String.isNotBlank(Con.AccountId)){
+                if(Trigger.oldmap.get(con.id).AccountID!=Trigger.newmap.get(con.id).AccountId){
+                    accountIDSet.add(Trigger.oldmap.get(con.id).AccountID);
+                    accountIDSet.add(Trigger.newmap.get(con.id).AccountId);
+                }
+            }
+            else{
+                accountIDSet.add(Trigger.oldmap.get(con.id).AccountID);
+            }
+        }
+    }
+    if(Trigger.isdelete && Trigger.isafter){
+        for(Contact con:Trigger.old){
+            if(String.isNotBlank(Con.AccountId)){
+                accountIDSet.add(Trigger.oldmap.get(con.id).AccountID);
+            }
+        }
+    }
+    if(accountIDSet.size()>0 && accountIDSet!=NULL){
+        System.debug('calling helper');
+        ContactTriggerHelper.checkNoofContact(accountIDSet);
+    }
+}
